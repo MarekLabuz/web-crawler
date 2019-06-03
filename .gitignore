@@ -2,3 +2,4 @@
 .vscode
 dev.run.sh
 dev.stop.sh
+node_modules

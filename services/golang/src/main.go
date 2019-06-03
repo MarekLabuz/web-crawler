@@ -12,10 +12,10 @@ import (
 	"golang.org/x/net/html"
 )
 
-var matchNodeQuery = "MATCH (n:Item { id: $id, checked: false }) RETURN n"
-var mergeNodeQuery = "MERGE (n:Item { id: $id, name: $name, checked: true }) RETURN n"
-var mergeLinkQuery = "MATCH (n1:Item { id: $id1 }) MATCH (n2:Item { id: $id2 }) " +
-	"MERGE (n1)-[:leads]->(n2) RETURN n1, n2"
+var matchNodeQuery = "MATCH (n:Page { id: $id, checked: false }) RETURN n"
+var mergeNodeQuery = "MERGE (n:Page { id: $id, name: $name, checked: true }) RETURN n"
+var mergeLinkQuery = "MATCH (n1:Page { id: $id1 }) MATCH (n2:Page { id: $id2 }) " +
+	"MERGE (n1)-[:leadsTo]->(n2) RETURN n1, n2"
 
 func getPathnamesOnSite(url string) ([]string, error) {
 	pathnames := []string{}
@@ -140,7 +140,7 @@ func main() {
 	defer driver.Close()
 
 	runQuery(driver, "MATCH (n) DETACH DELETE n", nil)
-	if err := processSite(driver, os.Args[1], "/", 2); err != nil {
+	if err := processSite(driver, os.Args[1], "/", 3); err != nil {
 		fmt.Println(err.Error())
 	}
 
