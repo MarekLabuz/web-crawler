@@ -76,7 +76,7 @@ func processSite(driver neo4j.Driver, host string, basePathname string, counter 
 	matchNodeArgs := map[string]interface{}{"id": basePathname}
 	result, err := runQuery(driver, matchNodeQuery, matchNodeArgs)
 	if err != nil {
-		return err
+		return fmt.Errorf("Matching error for %s: %s", basePathname, err.Error())
 	}
 
 	if result.Next() || counter <= 0 {
@@ -90,7 +90,7 @@ func processSite(driver neo4j.Driver, host string, basePathname string, counter 
 
 	mergeNodeArgs := map[string]interface{}{"id": basePathname, "name": basePathname}
 	if _, err := runQuery(driver, mergeNodeQuery, mergeNodeArgs); err != nil {
-		return err
+		return fmt.Errorf("Merging error for %s: %s", basePathname, err.Error())
 	}
 
 	var innerWaitgroup sync.WaitGroup
@@ -140,7 +140,9 @@ func main() {
 	defer driver.Close()
 
 	runQuery(driver, "MATCH (n) DETACH DELETE n", nil)
-	processSite(driver, os.Args[1], "/", 2)
+	if err := processSite(driver, os.Args[1], "/", 2); err != nil {
+		fmt.Println(err.Error())
+	}
 
 	fmt.Println("Finished")
 }
